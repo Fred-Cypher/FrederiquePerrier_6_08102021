@@ -1,14 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv').config();
+const path = require('path');
+
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 const userRoutes = require('./routes/users');
+const sauceRoute = require('./routes/sauces');
 
-//'mongodb+srv://Fred:mongocypher27@cluster0.k2vyo.mongodb.net/piiquante?retryWrites=true&w=majority '
-//connect(, { useNewUrlParser: true, useUnifiedTopology: true })
 mongoose.connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
@@ -20,6 +23,9 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.use('/api/auth', userRoutes);
+app.use('/api/sauces', sauceRoute);
 
 module.exports = app;
