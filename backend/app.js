@@ -11,6 +11,7 @@ app.use(cors());
 const userRoutes = require('./routes/users');
 const sauceRoute = require('./routes/sauces');
 
+// Connexion à la base de données MongoDB Atlas avec mongoose
 mongoose.connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
