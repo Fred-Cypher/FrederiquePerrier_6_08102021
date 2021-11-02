@@ -1,14 +1,17 @@
 const Sauce = require('../models/sauce');
-const fs = require('fs');
+const fs = require('fs'); // File system de Node pour gérer les fichiers images
+
 
 // Création d'une nouvelle sauce
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;
     const sauce = new Sauce({
-        ...sauceObject,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        ...sauceObject, 
+        // Création de l'URL de l'image
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` 
     });
+    // Sauvegarde de la sauce dans la base de données
     sauce.save()
         .then(() => res.status(201).json({ message: 'Sauce créée' }))
         .catch(error => res.status(400).json({ error }));
@@ -16,11 +19,16 @@ exports.createSauce = (req, res, next) => {
 
 // Modification d'une sauce
 exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.file ?
+    const sauceObject = req.file ? // Vérification que l'utilisateur modifie le fichier image
+    // Si modification de l'image
     {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
+        // Récupération des informations de l'objet 
+        ...JSON.parse(req.body.sauce), 
+        // Génération de l'URL de la nouvelle image
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` 
+    // Si modification d'une information de l'objet autre que l'image, on récupère les informations modifiées    
+    } : { ...req.body }; 
+    // Envoi des modifications
     Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
         .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
         .catch(error => res.status(400).json({ error }));
@@ -31,7 +39,7 @@ exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
             const filename = sauce.imageUrl.split('/images/')[1];
-            fs.unlink(`images/${filename}`, () => {
+            fs.unlink(`images/${filename}`, () => {  // Permet de supprimer le fichier du dossier "images"
                 Sauce.deleteOne({ _id: req.params.id })
                 .then(() => res.status(200).json({ message: 'Sauce supprimée' }))
                 .catch(error => res.status(400).json({ error }));
@@ -40,7 +48,7 @@ exports.deleteSauce = (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 };
 
-// Affichage d'une seule sauce
+// Affichage d'une seule sauce grâce à son id
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => res.status(200).json(sauce))
@@ -71,7 +79,7 @@ exports.likeSauce = (req, res, next) => {
     } else if ( req.body.like === -1){
         Sauce.updateOne({ _id: req.params.id},
             {
-                $inc: { dislikes: +1 }, // Ajout d'un Dislike
+                $inc: { dislikes: +1 }, // Ajout d'un Dislike  
                 $push: { usersDisliked: req.body.userId} // Ajout de l'Id de l'utilisateur dans le tableau
             })
             .then(sauce => res.status(200).json({ message: 'Vous avez mis un Dislike'}))
