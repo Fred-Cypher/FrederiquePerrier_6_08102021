@@ -41,6 +41,7 @@ exports.modifySauce = (req, res, next) => {
             .catch(error => res.status(500).json({ error }));
     } else { 
         // Si l'image n'est pas changée, on récupère directement les informations modifiées  
+        const sauceObject = { ...req.body };
         Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
         .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
         .catch(error => res.status(400).json({ error }));
