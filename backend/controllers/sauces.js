@@ -19,19 +19,32 @@ exports.createSauce = (req, res, next) => {
 
 // Modification d'une sauce
 exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.file ? // Vérification que l'utilisateur modifie le fichier image
-    // Si modification de l'image
-    {
-        // Récupération des informations de l'objet 
-        ...JSON.parse(req.body.sauce), 
-        // Génération de l'URL de la nouvelle image
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` 
-    // Si modification d'une information de l'objet autre que l'image, on récupère les informations modifiées    
-    } : { ...req.body }; 
-    // Envoi des modifications
-    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+    // Vérification que l'utilisateur modifie le fichier image
+    if(req.file){ 
+        // Recherche de la sauce dans la base de données
+        Sauce.findOne({ _id: req.params.id }) 
+            // Suppression et remplacement de l'image 
+            .then(sauce => { 
+                const filename = sauce.imageUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, () => {  // Permet de supprimer le fichier du dossier "images"
+                    const sauceObject = {
+                        ...JSON.parse(req.body.sauce),  
+                        // Génération de l'URL de la nouvelle image
+                        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+                    }
+                // On récupère les informations modifiées pour les envoyer dans la base de données
+                Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+                    .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
+                    .catch(error => res.status(400).json({ error }));
+                })
+            })
+            .catch(error => res.status(500).json({ error }));
+    } else { 
+        // Si l'image n'est pas changée, on récupère directement les informations modifiées  
+        Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
         .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
         .catch(error => res.status(400).json({ error }));
+    }
 };
 
 // Suppression d'une sauce et de son image dans le dossier "images"
