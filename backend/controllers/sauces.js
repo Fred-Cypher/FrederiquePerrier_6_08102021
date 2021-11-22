@@ -43,8 +43,8 @@ exports.modifySauce = (req, res, next) => {
         // Si l'image n'est pas changée, on récupère directement les informations modifiées  
         const sauceObject = { ...req.body };
         Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-        .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
-        .catch(error => res.status(400).json({ error }));
+            .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
+            .catch(error => res.status(400).json({ error }));
     }
 };
 
@@ -55,8 +55,8 @@ exports.deleteSauce = (req, res, next) => {
             const filename = sauce.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {  // Permet de supprimer le fichier du dossier "images"
                 Sauce.deleteOne({ _id: req.params.id })
-                .then(() => res.status(200).json({ message: 'Sauce supprimée' }))
-                .catch(error => res.status(400).json({ error }));
+                    .then(() => res.status(200).json({ message: 'Sauce supprimée' }))
+                    .catch(error => res.status(400).json({ error }));
             });
         })
         .catch(error => res.status(500).json({ error }));

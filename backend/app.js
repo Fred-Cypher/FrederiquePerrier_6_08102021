@@ -3,10 +3,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const limiter = rateLimit({ windowMs : 15 * 60 * 1000, max: 20});
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(helmet());
+app.use(limiter); 
 
 const userRoutes = require('./routes/users');
 const sauceRoute = require('./routes/sauces');
