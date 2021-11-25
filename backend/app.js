@@ -5,7 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const limiter = rateLimit({ windowMs : 15 * 60 * 1000, max: 20});
+const limiter = rateLimit({ windowMs : 15 * 60 * 1000, max: 200});
 
 const app = express();
 app.use(express.json());
