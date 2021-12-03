@@ -2,7 +2,8 @@ const Sauce = require('../models/sauce');
 const fs = require('fs'); // File system de Node pour interagir avec le système de fichiers du serveur
 
 
-// Création d'une nouvelle sauce
+// Création d'une nouvelle sauce 
+
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;
@@ -18,6 +19,7 @@ exports.createSauce = (req, res, next) => {
 };
 
 // Modification d'une sauce
+
 exports.modifySauce = (req, res, next) => {
     // Vérification que l'utilisateur modifie le fichier image
     if(req.file){ 
@@ -50,6 +52,7 @@ exports.modifySauce = (req, res, next) => {
 };
 
 // Suppression d'une sauce et de son image dans le dossier "images"
+
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
@@ -71,21 +74,24 @@ exports.deleteSauce = (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 };
 
-// Affichage d'une seule sauce grâce à son id
+// Affichage d'une seule sauce grâce à son id 
+
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => res.status(200).json(sauce))
         .catch(error => res.status(404).json({ error }));
 };
 
-// Affichage de toutes les sauces
+// Affichage de toutes les sauces 
+
 exports.getAllSauces = (req, res, next) => {
     Sauce.find()
         .then(sauces => res.status(200).json(sauces))
         .catch(error => res.status(400).json({ error }));
 };
 
-// Ajout de Like ou Dislike sur une sauce
+// Ajout de Like ou Dislike sur une sauce 
+
 exports.likeSauce = (req, res, next) => {
 
     // Ajout d'un like à la sauce quand l'utilisateur n'a pas encore mis de Like ou de Dislike

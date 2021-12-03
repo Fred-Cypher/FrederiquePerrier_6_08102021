@@ -5,6 +5,7 @@ const User = require('../models/user');
 
 
 // Inscription d'un utilisateur 
+
 exports.signup = (req, res, next) => {
     // Chiffrage du mot de passe
     bcrypt.hash(req.body.password, 10)
@@ -20,7 +21,8 @@ exports.signup = (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 };
 
-// Connexion d'un utilisateur enregistré
+// Connexion d'un utilisateur enregistré 
+
 exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {
