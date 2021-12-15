@@ -30,7 +30,7 @@ exports.modifySauce = (req, res, next) => {
                 if (!sauce){
                     res.status(404).json({ error :new Error('Pas de sauce trouvée')});
                 }
-                // Vérifie que l'utilisateur est bien autorisé à supprimer la sauce
+                // Vérifie que l'utilisateur est bien autorisé à modifier la sauce
                 if(sauce.userId !== req.auth.userId){ 
                     res.status(400).json({ error: new Error('Requête non autorisée')})
                 }
@@ -55,7 +55,7 @@ exports.modifySauce = (req, res, next) => {
                 if (!sauce){
                     res.status(404).json({ error :new Error('Pas de sauce trouvée')});
                 }
-                // Vérifie que l'utilisateur est bien autorisé à supprimer la sauce
+                // Vérifie que l'utilisateur est bien autorisé à modifier la sauce
                 if(sauce.userId !== req.auth.userId){ 
                     res.status(400).json({ error: new Error('Requête non autorisée')})
                 }
