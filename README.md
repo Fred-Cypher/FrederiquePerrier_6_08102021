@@ -19,6 +19,8 @@ Installez la partie frontend en suivant les instructions du README.md du reposit
 Clonez ce repository, ouvrez-le dans votre terminal et tapez 'npm install'. 
 Une fois les dépendances installées, modifiez le fichier '.env.example' en changeant les valeurs de DB et TOKEN, par le lien vers votre base de données MongoDB et le token secret de votre choix, puis renommez le fichier en '.env'. Vous pouvez maintenant lancer le serveur en tapant la commande 'nodemon serve' dans votre terminal. 
 
+Créez un dossier "images" dans le dossier "backend" pour que les images de l'appli puissent s'enregistrer correctement. 
+
 ***
 
 ### Contraintes techniques :

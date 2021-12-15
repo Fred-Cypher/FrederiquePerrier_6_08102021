@@ -93,29 +93,49 @@ exports.getAllSauces = (req, res, next) => {
 // Ajout de Like ou Dislike sur une sauce 
 
 exports.likeSauce = (req, res, next) => {
-
-    // Ajout d'un like à la sauce quand l'utilisateur n'a pas encore mis de Like ou de Dislike
-    if( req.body.like === 1){
-        Sauce.updateOne({ _id: req.params.id },
-            {
-                $inc: { likes: +1 },  // Ajout du Like, incrémentation 
-                $push: { usersLiked: req.body.userId} // Ajout de l'Id de l'utilisateur dans le tableau
+    // Ajout d'un like à la sauce quand l'utilisateur n'a pas encore mis de Like 
+    if (req.body.like === 1) {
+        Sauce.findOne({ _id: req.params.id })
+            .then(sauce => {
+                // Vérification pour voir si l'utilisateur a déjà mis un Like ou pas
+                if (sauce.usersLiked.includes(req.body.userId)) {
+                    //Si l'id de l'utilisateur apparaît dans le tableau des utilisateurs qui ont mis un Like
+                    res.status(400).json({ error: new Error('Vous avez déjà mis un Like')});
+                }
+                // Si l'id de l'utilisateur n'apparaît pas dans le tableau des utilisateurs qui ont mis un Like, on ajoute un Like
+                Sauce.updateOne({ _id: req.params.id }, 
+                    {
+                        $inc: { likes: +1 }, // Ajout d'un Like  
+                        $push: { usersLiked: req.body.userId} // Ajout de l'Id de l'utilisateur dans le tableau
+                    })
+                    .then(sauce => res.status(200).json({ message: 'Vous avez mis un Like'}))
+                    .catch(error => res.status(400).json({ error })
+                );
             })
-            .then(sauce => res.status(200).json({ message: 'Vous avez mis un Like'}))
-            .catch(error => res.status(400).json({ error }));
-
-    // Ajout d'un Dislike à la sauce quand l'utilisateur n'a pas encore mis de Like ou de Dislike
+            .catch(error => res.status(400).json({ error })
+        );
     } else if ( req.body.like === -1){
-        Sauce.updateOne({ _id: req.params.id},
-            {
-                $inc: { dislikes: +1 }, // Ajout d'un Dislike  
-                $push: { usersDisliked: req.body.userId} // Ajout de l'Id de l'utilisateur dans le tableau
+        // Ajout d'un Dislike à la sauce quand l'utilisateur n'a pas encore mis de Dislike
+        Sauce.findOne({ _id: req.params.id })
+            .then(sauce => {
+                // Vérification pour voir si l'utilisateur a déjà mis un Dislike ou pas
+                if (sauce.usersDisliked.includes(req.body.userId)) {
+                    //Si l'id de l'utilisateur apparaît dans le tableau des utilisateurs qui ont mis un Dislike
+                    res.status(400).json({ error: new Error('Vous avez déjà mis un Dislike')});
+                }
+                // Si l'id de l'utilisateur n'apparaît pas dans le tableau des utilisateurs qui ont mis un Dislike, on ajoute un Dislike
+                Sauce.updateOne({ _id: req.params.id }, 
+                    {
+                        $inc: { dislikes: +1 }, // Ajout d'un Dislike  
+                        $push: { usersDisliked: req.body.userId} // Ajout de l'Id de l'utilisateur dans le tableau
+                    })
+                    .then(sauce => res.status(200).json({ message: 'Vous avez mis un Like'}))
+                    .catch(error => res.status(400).json({ error })
+                );
             })
-            .then(sauce => res.status(200).json({ message: 'Vous avez mis un Dislike'}))
             .catch(error => res.status(400).json({ error }));
-
-    // Suppression du Like ou du Dislike déjà donné à la sauce
     } else {
+        // Suppression du Like ou du Dislike déjà donné à la sauce
         Sauce.findOne({ _id: req.params.id })
             .then(sauce => {
                 // Si l'id de l'utilisateur apparaît dans le tableau des utilisateurs qui ont mis un Like
