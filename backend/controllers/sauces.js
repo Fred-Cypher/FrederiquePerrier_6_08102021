@@ -27,6 +27,13 @@ exports.modifySauce = (req, res, next) => {
         Sauce.findOne({ _id: req.params.id }) 
             // Suppression et remplacement de l'image 
             .then(sauce => { 
+                if (!sauce){
+                    res.status(404).json({ error :new Error('Pas de sauce trouvée')});
+                }
+                // Vérifie que l'utilisateur est bien autorisé à supprimer la sauce
+                if(sauce.userId !== req.auth.userId){ 
+                    res.status(400).json({ error: new Error('Requête non autorisée')})
+                }
                 // Permet de supprimer le fichier du dossier "images"
                 const filename = sauce.imageUrl.split('/images/')[1];
                 fs.unlink(`images/${filename}`, () => {  
@@ -43,12 +50,23 @@ exports.modifySauce = (req, res, next) => {
             })
             .catch(error => res.status(500).json({ error }));
     } else { 
-        // Si l'image n'est pas changée, on récupère directement les informations modifiées  
-        const sauceObject = { ...req.body };
-        Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-            .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
-            .catch(error => res.status(400).json({ error }));
-    }
+        Sauce.findOne({ _id: req.params.id }) 
+            .then(sauce => {    
+                if (!sauce){
+                    res.status(404).json({ error :new Error('Pas de sauce trouvée')});
+                }
+                // Vérifie que l'utilisateur est bien autorisé à supprimer la sauce
+                if(sauce.userId !== req.auth.userId){ 
+                    res.status(400).json({ error: new Error('Requête non autorisée')})
+                }
+                // Si l'image n'est pas changée, on récupère directement les informations modifiées  
+                const sauceObject = { ...req.body };
+                Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+                    .then(() => res.status(200).json({ message: 'Sauce modifiée !'}))
+                    .catch(error => res.status(400).json({ error }));
+            })
+            .catch(error => res.status(500).json({ error }));
+    };
 };
 
 // Suppression d'une sauce et de son image dans le dossier "images"
