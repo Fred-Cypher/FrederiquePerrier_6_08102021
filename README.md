@@ -24,7 +24,7 @@ Créez un dossier "images" dans le dossier "backend" pour que les images de l'ap
 ***
 
 ### Contraintes techniques :
-* le mot de passe doit être haché
+* le mot de passe doit être hashé
 * l'authentification doit être renforcée sur toutes les routes
 * les adresses électroniques doivent être uniques
 * la sécurité de la base de données ne doit pas empêcher l'application de s'ouvrir sur la machine d'un utilisateur
